@@ -1,52 +1,56 @@
 //
-// Created by tew on 2016/5/18.
+// Created by tew on 2016/5/19.
 //
 
-#ifndef DATASTRUCTURE_LINKLIST_H
-#define DATASTRUCTURE_LINKLIST_H
+#ifndef DATASTRUCTURE_DOUBLELINKLIST_H
+#define DATASTRUCTURE_DOUBLELINKLIST_H
 
 #include "List.h"
 
 template <class elem>
-class Node {
+class DoubleNode {
 public:
     elem element;
-    Node<elem> *next;
+    DoubleNode *prev;
+    DoubleNode *next;
 
-    Node(const elem &element, Node *next = nullptr) {
+    DoubleNode(const elem &element, DoubleNode *prev = nullptr, DoubleNode *next = nullptr) {
         this->element = element;
+        this->prev = prev;
         this->next = next;
     }
 
-    Node(Node *next = nullptr) {
+    DoubleNode(DoubleNode *prev = nullptr, DoubleNode *next = nullptr) {
+        this->prev = prev;
         this->next = next;
     }
 };
 
 template <class elem>
-class LinkList : public List<elem> {
+class DoubleLinkList : public List<elem> {
 private:
-    Node<elem> *head;
+    DoubleNode<elem> *head;
+    DoubleNode<elem> *tail;
     int listSize;
-    Node<elem> *cur;
+    DoubleNode<elem> *cur;
 public:
-    LinkList() {
+    DoubleLinkList() {
         head = cur = nullptr;
         listSize = 0;
     }
 
-    ~LinkList() {
+    ~DoubleLinkList() {
         clear();
     }
 
     void clear() {
-        Node<elem> *tmp;
+        DoubleNode<elem> *tmp;
         while (head != nullptr) {
             tmp = head;
             head = head->next;
             delete tmp;
         }
-        head = cur = nullptr;
+        head = cur = tail = nullptr;
         listSize = 0;
     }
 
@@ -61,19 +65,13 @@ public:
     }
 
     void setEnd() {
-        while (cur->next) {
-            cur = cur->next;
-        }
+        cur = tail;
     }
 
     void prev() {
-        Node<elem> *tmp = head;
-        if (cur == head)
+        if (cur->prev == nullptr)
             return;
-        while (tmp->next != cur) {
-            tmp = tmp->next;
-        }
-        cur = tmp;
+        cur = cur->prev;
     }
 
     void next() {
@@ -95,7 +93,7 @@ public:
         if (pos == -1)
             return cur->element;
         if (pos >= 0 && pos < listSize) {
-            Node<elem> *tmp = head;
+            DoubleNode<elem> *tmp = head;
             for (int i = 0; i < pos; ++i) {
                 tmp = tmp->next;
             }
@@ -104,7 +102,7 @@ public:
     }
 
     void print() const {
-        Node<elem> *tmp = head;
+        DoubleNode<elem> *tmp = head;
         while (tmp) {
             std::cout<<tmp->element<<" ";
             tmp = tmp->next;
@@ -118,41 +116,54 @@ public:
 };
 
 template <class elem>
-bool LinkList<elem>::append(const elem &element) {
+bool DoubleLinkList<elem>::append(const elem &element) {
     if (listSize == 0) {
-        head = new Node<elem>(element);
+        head = new DoubleNode<elem>(element);
+        tail = head;
     } else {
-        Node<elem> *tmp = head;
-        while (tmp->next) {
-            tmp = tmp->next;
-        }
-        tmp->next = new Node<elem>(element);
+        DoubleNode<elem> *newNode = new DoubleNode<elem>(element);
+        tail->next = newNode;
+        newNode->prev = tail;
+        tail = newNode;
     }
     ++listSize;
     return true;
 }
 
 template <class elem>
-bool LinkList<elem>::insert(const elem &element, int pos) {
+bool DoubleLinkList<elem>::insert(const elem &element, int pos) {
     if (pos > listSize)
         return false;
-    if (pos == listSize && listSize == 0) {
-        head = new Node<elem>(element);
+    if (pos == 0) {
+        if (listSize == 0) {
+            head = new DoubleNode<elem>(element);
+        } else {
+            DoubleNode<elem> *tmp = new DoubleNode<elem>(element);
+            head->prev = tmp;
+            tmp->next = head;
+            head = tmp;
+        }
+        ++listSize;
+    } else if (pos == listSize) {
+        append(element);
     } else {
-        Node<elem> *tmp = head;
+        DoubleNode<elem> *tmp = head;
         for (int i = 0; i < pos; ++i) {
             tmp = tmp->next;
         }
-        tmp->next = new Node<elem>(element, tmp->next);
+        DoubleNode<elem> *newNode = new DoubleNode<elem>(element);
+        newNode->next = tmp;
+        newNode->prev = tmp->prev;
+        tmp->prev->next = newNode;
+        tmp->prev = newNode;
+        ++listSize;
     }
-
-    ++listSize;
     return true;
 }
 
 template <class elem>
-bool LinkList<elem>::remove(elem &element) {
+bool DoubleLinkList<elem>::remove(elem &element) {
     return true;
 }
 
-#endif //DATASTRUCTURE_LINKLIST_H
+#endif //DATASTRUCTURE_DOUBLELINKLIST_H
