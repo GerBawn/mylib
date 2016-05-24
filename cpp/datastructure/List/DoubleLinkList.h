@@ -6,25 +6,7 @@
 #define DATASTRUCTURE_DOUBLELINKLIST_H
 
 #include "List.h"
-
-template <class elem>
-class DoubleNode {
-public:
-    elem element;
-    DoubleNode *prev;
-    DoubleNode *next;
-
-    DoubleNode(const elem &element, DoubleNode *prev = nullptr, DoubleNode *next = nullptr) {
-        this->element = element;
-        this->prev = prev;
-        this->next = next;
-    }
-
-    DoubleNode(DoubleNode *prev = nullptr, DoubleNode *next = nullptr) {
-        this->prev = prev;
-        this->next = next;
-    }
-};
+#include "../DoubleNode.h"
 
 template <class elem>
 class DoubleLinkList : public List<elem> {

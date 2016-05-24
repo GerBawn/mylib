@@ -6,26 +6,11 @@
 #define DATASTRUCTURE_LINKLIST_H
 
 #include "List.h"
-
-template <class elem>
-class Node {
-public:
-    elem element;
-    Node<elem> *next;
-
-    Node(const elem &element, Node *next = nullptr) {
-        this->element = element;
-        this->next = next;
-    }
-
-    Node(Node *next = nullptr) {
-        this->next = next;
-    }
-};
+#include "../Node.h"
 
 template <class elem>
 class LinkList : public List<elem> {
-private:
+protected:
     Node<elem> *head;
     int listSize;
     Node<elem> *cur;
@@ -136,7 +121,7 @@ template <class elem>
 bool LinkList<elem>::insert(const elem &element, int pos) {
     if (pos > listSize)
         return false;
-    if (pos == listSize && listSize == 0) {
+    if (listSize == 0) {
         head = new Node<elem>(element);
     } else {
         Node<elem> *tmp = head;
